@@ -16,7 +16,7 @@ jobs:
           distribution: 'temurin'
       - uses: gradle/actions/setup-gradle@v4
         with:
-          fetch-depth: 0
+          gradle-version: 8.7
       - name: Execute Gradle build
         run: ./gradlew build
       - name: Generate coverage report
