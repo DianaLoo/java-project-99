@@ -17,7 +17,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           fetch-depth: 0
-     - name: Cache SonarQube packages
+      - name: Execute Gradle build
+        run: ./gradlew build
+      - name: Generate coverage report
+        run: make report    
+      - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
