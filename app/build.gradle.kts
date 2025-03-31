@@ -43,9 +43,9 @@ tasks.test {
 }
 
 sonar {
-    properties {
-        property("sonar.projectKey", "hexlet-boilerplates_java-package")
-        property("sonar.organization", "hexlet-boilerplates")
-        property("sonar.host.url", "https://sonarcloud.io")
-    }
+     properties {
+         proper "sonar.projectKey", "DianaLoo_java-project-99"
+         property "sonar.organization", "dianaloo"
+         property "sonar.host.url", "https://sonarcloud.io"
+     }
 }
