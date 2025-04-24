@@ -1,6 +1,7 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.repository.UserRepository;
 import net.datafaker.Faker;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -33,6 +35,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 
@@ -92,6 +95,7 @@ public class UsersControllerTest {
         String body = result.getResponse().getContentAsString();
         assertThatJson(body).isArray();
     }
+
     @Test
     public void testCreate() throws Exception {
         var data = Instancio.of(modelGenerator.getUserModel())
@@ -123,6 +127,24 @@ public class UsersControllerTest {
                 v -> v.node("lastName").isEqualTo(testUser.getLastName()),
                 v -> v.node("email").isEqualTo(testUser.getEmail())
         );
+    }
+    @Test
+    public void testUpdate() throws Exception {
+        var data = new HashMap<>();
+        data.put("firstName", "Mike");
+
+        var request = put("/api/users/" + testUser.getId()).with(jwt())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(data));
+
+        mockMvc.perform(request)
+                .andExpect(status().isOk());
+
+        var user = userRepository.findByEmail(testUser.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        assertThat(user).isNotNull();
+        assertThat(user.getFirstName()).isEqualTo(data.get("firstName"));
     }
 
     @Test
