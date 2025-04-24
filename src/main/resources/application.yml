@@ -18,3 +18,7 @@ rsa:
 server:
   address: 0.0.0.0
   port: ${PORT:8080}
+
+sentry:
+  dsn: https://0dae560a3a969a7b4dd2d5b8a5332851@o4509207537647616.ingest.de.sentry.io/4509207545053264
+  send-default-pii: true

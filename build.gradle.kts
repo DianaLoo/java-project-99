@@ -8,6 +8,7 @@ plugins {
 	id("org.sonarqube") version "6.0.1.5171"
 	id("com.github.ben-manes.versions") version "0.48.0"
 	id("io.freefair.lombok") version "8.6"
+	id("io.sentry.jvm.gradle") version "5.4.0"
 }
 
 group = "hexlet.code"
@@ -24,6 +25,13 @@ application {
 
 repositories {
 	mavenCentral()
+}
+
+sentry {
+	includeSourceContext = true
+	org = "dianaloo"
+	projectName = "java-spring-boot"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
 dependencies {
