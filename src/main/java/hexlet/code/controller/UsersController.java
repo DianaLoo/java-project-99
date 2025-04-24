@@ -9,6 +9,7 @@ import hexlet.code.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,12 +32,15 @@ public class UsersController {
     @Autowired
     private UserMapper userMapper;
 
-    @GetMapping(path = "/users")
-    public List<UserDTO> index() {
+    @GetMapping("/users")
+    public ResponseEntity<List<UserDTO>> index() {
         var users = userRepository.findAll();
-        return users.stream()
+        var result = users.stream()
                 .map(p -> userMapper.map(p))
                 .toList();
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.size()))
+                .body(result);
     }
 
     @GetMapping(path = "/users/{id}")

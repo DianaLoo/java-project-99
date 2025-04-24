@@ -11,6 +11,7 @@ import hexlet.code.repository.TaskStatusRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,13 +32,14 @@ public class TaskStatusController {
     private TaskStatusMapper taskStatusMapper;
 
     @GetMapping("/task_statuses")
-    @ResponseStatus(HttpStatus.OK)
-    public List<TaskStatusDTO> index() {
-        var taskStatuses = taskStatusRepository.findAll();
-        var result = taskStatuses.stream()
-                .map(taskStatusMapper::map)
+    public ResponseEntity<List<TaskStatusDTO>> index() {
+        var users = taskStatusRepository.findAll();
+        var result = users.stream()
+                .map(p -> taskStatusMapper.map(p))
                 .toList();
-        return result;
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.size()))
+                .body(result);
     }
 
     @PostMapping("/task_statuses")
