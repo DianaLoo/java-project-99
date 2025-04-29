@@ -1,8 +1,10 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.UserMapper;
+import hexlet.code.repository.LabelRepository;
+import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import net.datafaker.Faker;
 
@@ -13,7 +15,6 @@ import org.instancio.Instancio;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +55,12 @@ public class UsersControllerTest {
 
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private TaskRepository taskRepository;
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
+    @Autowired
+    private LabelRepository labelRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -71,7 +77,9 @@ public class UsersControllerTest {
     @BeforeEach
     public void setUp() {
         userRepository.deleteAll();
-
+        labelRepository.deleteAll();
+        taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .apply(springSecurity())
@@ -80,10 +88,6 @@ public class UsersControllerTest {
         testUser = Instancio.of(modelGenerator.getUserModel()).create();
         token = jwt().jwt(builder -> builder.subject(testUser.getEmail()));
         userRepository.save(testUser);
-    }
-    @AfterEach
-    void testAfter() {
-        userRepository.deleteAll();
     }
 
     @Test
@@ -128,20 +132,23 @@ public class UsersControllerTest {
                 v -> v.node("email").isEqualTo(testUser.getEmail())
         );
     }
+
     @Test
     public void testUpdate() throws Exception {
+        //userRepository.save(testUser);
         var data = new HashMap<>();
         data.put("firstName", "Mike");
 
-        var request = put("/api/users/" + testUser.getId()).with(jwt())
+        var request = put("/api/users/" + testUser.getId())
+                .with(jwt())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om.writeValueAsString(data));
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
 
-        var user = userRepository.findByEmail(testUser.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        var user = userRepository.findById(testUser.getId())
+                .orElseThrow();
 
         assertThat(user).isNotNull();
         assertThat(user.getFirstName()).isEqualTo(data.get("firstName"));
