@@ -84,3 +84,6 @@ sonar {
 		property("sonar.host.url", "https://sonarcloud.io")
 	}
 }
+tasks.sentryBundleSourcesJava {
+	enabled = System.getenv("SENTRY_AUTH_TOKEN") != null
+}
