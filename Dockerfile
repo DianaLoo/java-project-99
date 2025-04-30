@@ -20,4 +20,4 @@ COPY ./ .
 
 RUN gradle installDist
 
-CMD java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
+CMD ./build/install/app/bin/app --spring.profiles.active=prod
