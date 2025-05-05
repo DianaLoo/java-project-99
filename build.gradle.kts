@@ -76,6 +76,13 @@ tasks.withType<Test> {
 //    }
 //}
 //
+tasks.jacocoTestReport {
+	reports {
+		xml.required = true
+		csv.required = false
+		html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+	}
+}
 
 sonar {
 	properties {
