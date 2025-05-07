@@ -20,4 +20,7 @@ public class UserUtils {
         var email = authentication.getName();
         return userRepository.findByEmail(email).get();
     }
+    public boolean isAuthor(long userId) {
+        return getCurrentUser().getId() == userId;
+    }
 }
