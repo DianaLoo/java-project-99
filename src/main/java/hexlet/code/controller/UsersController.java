@@ -63,7 +63,6 @@ public class UsersController {
 
     @PutMapping(path = "/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("@userUtils.isAuthor(#id)")
     public UserDTO update(@PathVariable Long id, @RequestBody UserUpdateDTO userData) {
         var user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found."));
